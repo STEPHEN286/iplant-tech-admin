@@ -3,17 +3,6 @@
 import Link from "next/link"
 import { useState } from "react"
 import { usePathname } from "next/navigation"
-// import {
-//   Sidebar,
-//   SidebarContent,
-//   SidebarGroup,
-//   SidebarGroupContent,
-//   SidebarGroupLabel,
-//   SidebarHeader,
-//   SidebarMenu,
-//   SidebarMenuButton,
-//   SidebarMenuItem,
-// } from "@/components/ui/sidebar"
 import {
   Sidebar,
   SidebarContent,
@@ -24,6 +13,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import {
   Package2,
@@ -41,8 +31,8 @@ import {
 } from "lucide-react"
 
 export default function AppSidebar() {
-  // const [activePath, setActivePath] = useState("/dashboard")
   const pathname = usePathname()
+  const { isMobile, setOpenMobile } = useSidebar();
 
   const navigationItems = [
     { name: "Dashboard Overview", href: "/", icon: Home },
@@ -58,26 +48,36 @@ export default function AppSidebar() {
     { name: "Admin Users", href: "/admin-users", icon: UserCog },
   ]
 
+  function handleNavClick() {
+    if (isMobile) setOpenMobile(false);
+  }
+
   return (
     <Sidebar>
-      <SidebarHeader className="flex flex-col items-center gap-4 px-4 py-6">
-        <Link href="#" className="flex items-center gap-2 font-semibold text-lg">
-          <Package2 className="h-6 w-6 text-green-500" />
+      <SidebarHeader className="flex flex-col items-center gap-6 px-6 py-8">
+        <Link href="#" className="flex items-center gap-3 font-bold text-xl">
+          <Package2 className="h-8 w-8 text-green-500" />
           <span className="text-green-500">iPlant Tech</span>
         </Link>
-        <span className="text-sm text-gray-400">Admin Dashboard</span>
+        <span className="text-base text-gray-500 font-medium">Admin Dashboard</span>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="px-4">
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sm font-semibold text-gray-600 mb-4 px-2">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton asChild isActive={pathname === item.href}>
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.name}</span>
+                    <Link 
+                      href={item.href} 
+                      onClick={handleNavClick}
+                      className="flex items-center gap-4 px-4 py-4 text-base font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="leading-relaxed">{item.name}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
