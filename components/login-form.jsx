@@ -104,18 +104,18 @@ export function LoginForm({
         >
           {isLoading ? "Logging in..." : "Login"}
         </Button>
-        <Separator />
+        {/* <Separator />
         <Button variant="outline" className="w-full bg-gray-800 text-white">
           <Image src="/google-color-svgrepo-com.svg" alt="Google" width={20} height={20} />
           Login with Google
-        </Button>
+        </Button> */}
       </div>
-      <div className="text-center text-sm">
+      {/* <div className="text-center text-sm">
         Don&apos;t have an account?{" "}
         <a href="#" className="underline underline-offset-4">
           Sign up
         </a>
-      </div>
+      </div> */}
     </form>
   );
 }
