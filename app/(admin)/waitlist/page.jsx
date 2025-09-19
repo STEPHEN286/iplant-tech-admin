@@ -4,8 +4,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ListFilter, UserPlus, UserCheck, Mail, CheckCircle, Send, FileDown, RefreshCw } from "lucide-react"
-import {useWaitlist }from "@/hooks/use-waitlist";
+import { ListFilter, UserPlus, UserCheck, Mail, CheckCircle, Send, FileDown, RefreshCw, Search } from "lucide-react"
+import { useWaitlist } from "@/hooks/use-waitlist";
+import { AddWaitlistMemberModal, EditWaitlistMemberModal, ConvertToCustomerModal, SendWaitlistCampaignModal, DeleteWaitlistMemberModal } from "@/components/waitlist-modal";
 
 export default function WaitlistPage() {
   const { data, isLoading, error, refetch, waitlist, totalCount } = useWaitlist()
@@ -60,14 +61,12 @@ export default function WaitlistPage() {
           <p className="text-gray-600">Track and manage potential customers</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button variant="outline" className="bg-gray-100 text-gray-900 border-gray-300 hover:bg-gray-200">
-            <Send className="h-4 w-4 mr-2" />
-            Send Campaign
-          </Button>
-          <Button className="bg-green-600 hover:bg-green-700 text-white">
+          <SendWaitlistCampaignModal />
+          <Button className="bg-primary hover:bg-primary/90 text-white">
             <FileDown className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
+          {/* <AddWaitlistMemberModal /> */}
         </div>
       </div>
 
@@ -79,25 +78,28 @@ export default function WaitlistPage() {
       </div>
 
       {/* Waitlist Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="  border-gray-200 overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="text-lg font-semibold text-gray-900">
               Waitlist Members ({totalCount || 0})
             </h2>
-            <Button onClick={refetch} variant="outline" size="sm">
+            {/* <Button onClick={refetch} variant="outline" size="sm">
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
-            </Button>
+            </Button> */}
           </div>
           
           {/* Search and Filters */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
-            <Input
-              type="search"
-              placeholder="Search by email..."
-              className="max-w-sm flex-1 text-gray-900 placeholder:text-gray-500 border-gray-300"
-            />
+          <div className="flex flex-col sm:flex-row items-start justify-between sm:items-center gap-3 mt-4 bg-white p-4 rounded-lg border border-gray-200">
+           <div className="w-full relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="search"
+                placeholder="Search by email..."
+                className="flex-1 text-gray-900 placeholder:text-gray-500 border-gray-300 pl-10 w-full"
+              />
+           </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -119,7 +121,7 @@ export default function WaitlistPage() {
         </div>
 
         {/* Table with Horizontal Scroll */}
-        <div className="overflow-x-auto border-t border-gray-200">
+        <div className="overflow-x-auto border rounded border-gray-200 bg-white">
           <div className="min-w-[1200px]">
             <Table className="w-full">
               <TableHeader>
@@ -162,13 +164,9 @@ export default function WaitlistPage() {
                           >
                             View
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 border-red-300 hover:bg-red-50"
-                          >
-                            Remove
-                          </Button>
+                          <EditWaitlistMemberModal member={member} />
+                          <ConvertToCustomerModal member={member} />
+                          <DeleteWaitlistMemberModal member={member} />
                         </div>
                       </TableCell>
                     </TableRow>

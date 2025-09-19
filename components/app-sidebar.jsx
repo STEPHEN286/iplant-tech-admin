@@ -28,6 +28,7 @@ import {
   Settings,
   UserCog,
   Users,
+  Tag,
 } from "lucide-react"
 
 export default function AppSidebar() {
@@ -37,6 +38,8 @@ export default function AppSidebar() {
   const navigationItems = [
     { name: "Dashboard Overview", href: "/", icon: Home },
     { name: "Orders & Customers", href: "/orders", icon: ShoppingCart },
+    { name: "Products", href: "/products", icon: Package },
+    { name: "Categories", href: "/categories", icon: Tag },
     { name: "Smart Pods", href: "/smart-pods", icon: Package },
     { name: "Customers", href: "/customers", icon: Users },
     { name: "Waitlist", href: "/waitlist", icon: ClipboardList },

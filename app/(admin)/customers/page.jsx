@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { ListFilter, UserPlus, UserCheck, Mail, CheckCircle, Send, FileDown, RefreshCw, Users, ShoppingCart, Package, TrendingUp } from "lucide-react"
+import { AddCustomerModal, EditCustomerModal, AssignPodModal, SendNewsletterModal } from "@/components/customer-modal"
 
 export default function CustomersPage() {
   const summaryData = [
@@ -70,14 +71,8 @@ export default function CustomersPage() {
           <p className="text-gray-600">Manage and analyze your customer base</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button variant="outline" className="bg-gray-100 text-gray-900 border-gray-300 hover:bg-gray-200">
-            <Send className="h-4 w-4 mr-2" />
-            Send Campaign
-          </Button>
-          <Button className="bg-green-600 hover:bg-green-700 text-white">
-            <UserPlus className="h-4 w-4 mr-2" />
-            Add Customer
-          </Button>
+          <SendNewsletterModal />
+          <AddCustomerModal />
         </div>
       </div>
 
@@ -178,13 +173,8 @@ export default function CustomersPage() {
                         >
                           View
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                        >
-                          Edit
-                        </Button>
+                        <EditCustomerModal customer={customer} />
+                        <AssignPodModal customer={customer} />
                       </div>
                     </TableCell>
                   </TableRow>
