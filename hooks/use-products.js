@@ -29,7 +29,26 @@ export const getProductById = async (id) => {
 // Create new product
 export const postProduct = async (data) => {
   try {
-    const response = await api.post("/products/", data)
+    const formData = new FormData()
+    
+    // Add all form fields to FormData
+    formData.append('name', data.name)
+    formData.append('description', data.description)
+    formData.append('stock', data.stock)
+    formData.append('price', data.price)
+    formData.append('category', data.category)
+    formData.append('pod_model', data.pod_model)
+    
+    // Add image file if present
+    if (data.image && data.image.length > 0) {
+      formData.append('image', data.image[0])
+    }
+    
+    const response = await api.post("/products/", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
     return response.data
   } catch (error) {
     console.error("Error creating product:", error)
@@ -40,7 +59,26 @@ export const postProduct = async (data) => {
 // Update product
 export const updateProduct = async ({ id, data }) => {
   try {
-    const response = await api.put(`/products/${id}/`, data)
+    const formData = new FormData()
+    
+    // Add all form fields to FormData
+    formData.append('name', data.name)
+    formData.append('description', data.description)
+    formData.append('stock', data.stock)
+    formData.append('price', data.price)
+    formData.append('category', data.category)
+    formData.append('pod_model', data.pod_model)
+    
+    // Add image file if present
+    if (data.image && data.image.length > 0) {
+      formData.append('image', data.image[0])
+    }
+    
+    const response = await api.put(`/products/${id}/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
     return response.data
   } catch (error) {
     console.error("Error updating product:", error)
