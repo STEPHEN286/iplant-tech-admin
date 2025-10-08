@@ -29,6 +29,11 @@ export const getProductById = async (id) => {
 // Create new product
 export const postProduct = async (data) => {
   try {
+    console.log("Creating product:", data)
+    console.log("Image:", data.image)
+    console.log("Image type:", typeof data.image)
+    console.log("Image length:", data.image?.length)
+    
     const formData = new FormData()
     
     // Add all form fields to FormData
@@ -40,8 +45,21 @@ export const postProduct = async (data) => {
     formData.append('pod_model', data.pod_model)
     
     // Add image file if present
-    if (data.image && data.image.length > 0) {
+    if (data.image && data.image.length > 0 && data.image[0]) {
+      console.log("Adding image to FormData:", data.image[0])
+      console.log("Image file name:", data.image[0].name)
+      console.log("Image file size:", data.image[0].size)
+      console.log("Image file type:", data.image[0].type)
       formData.append('image', data.image[0])
+    } else {
+      console.log("No image to add to FormData")
+      console.log("Image data:", data.image)
+    }
+    
+    // Log FormData contents
+    console.log("FormData entries:")
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value)
     }
     
     const response = await api.post("/products/", formData, {
@@ -70,9 +88,14 @@ export const updateProduct = async ({ id, data }) => {
     formData.append('pod_model', data.pod_model)
     
     // Add image file if present
-    if (data.image && data.image.length > 0) {
+    if (data.image && data.image.length > 0 && data.image[0]) {
+      console.log("Adding image to FormData for update:", data.image[0])
       formData.append('image', data.image[0])
+    } else {
+      console.log("No image to add to FormData for update")
     }
+    
+
     
     const response = await api.put(`/products/${id}/`, formData, {
       headers: {

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useGetProducts, useDeleteProduct } from "@/hooks/use-products"
 import { AddProductModal, EditProductModal } from "@/components/product-modal"
+import { DeleteConfirmationDialog, useDeleteConfirmation } from "@/components/delete-confirmation-dialog"
 import SummaryCard from "@/components/summary-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -35,6 +36,7 @@ import {
   RefreshCw,
   Loader2,
 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -42,10 +44,13 @@ export default function ProductsPage() {
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [selectedProductId, setSelectedProductId] = useState(null)
+  
+  // Delete confirmation dialog
+  const { isOpen: deleteDialogOpen, itemToDelete, openDeleteDialog, closeDeleteDialog } = useDeleteConfirmation()
 
   const { data, isLoading, error, refetch } = useGetProducts()
 
-  const { deleteProduct, isPending: isDeleting } = useDeleteProduct()
+  const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct()
 
   const products = data?.results || []
   const totalCount = data?.count || 0
@@ -87,13 +92,18 @@ export default function ProductsPage() {
     setEditModalOpen(true)
   }
 
-  const handleDelete = async (productId) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      try {
-        await deleteProduct(productId)
-      } catch (error) {
-        console.error("Error deleting product:", error)
-      }
+  const handleDelete = (productId) => {
+    const product = products.find(p => p.id === productId)
+    openDeleteDialog({ id: productId, name: product?.name })
+  }
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      deleteProduct(itemToDelete.id, {
+        onSuccess: () => {
+          closeDeleteDialog()
+        }
+      })
     }
   }
 
@@ -195,7 +205,40 @@ export default function ProductsPage() {
             />
           </div>
           <div className="flex gap-2">
-            <select
+          {/* <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-3 py-2 border  border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="All Categories">All Categories</option>
+              <option value="Smart Pots">Smart Pots</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Sensors">Sensors</option>
+            </select> */}
+            <Select >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Categories">All Categories</SelectItem>
+                <SelectItem value="Smart Pots">Smart Pots</SelectItem>
+                <SelectItem value="Accessories">Accessories</SelectItem>
+                <SelectItem value="Sensors">Sensors</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All Categories">All Categories</SelectItem>
+                <SelectItem value="Smart Pots">Smart Pots</SelectItem>
+                <SelectItem value="Accessories">Accessories</SelectItem>
+                <SelectItem value="Sensors">Sensors</SelectItem>
+              </SelectContent>
+            </Select>
+          {/* <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -204,14 +247,8 @@ export default function ProductsPage() {
               <option value="Smart Pots">Smart Pots</option>
               <option value="Accessories">Accessories</option>
               <option value="Sensors">Sensors</option>
-            </select>
-            <Button
-              variant="outline"
-              onClick={() => refetch()}
-              disabled={isLoading}
-            >
-              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            </Button>
+            </select> */}
+          
           </div>
         </div>
 
@@ -255,7 +292,8 @@ export default function ProductsPage() {
                       <TableCell>{getStockBadge(product.stock)}</TableCell>
                       <TableCell>
                         <div className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center">
-                          <Package className="h-4 w-4 text-gray-400" />
+                          {/* <Package className="h-4 w-4 text-gray-400" /> */}
+                          <img src={product.image} alt={product.name} className="w-8 h-8 rounded" />
                         </div>
                       </TableCell>
                       <TableCell>{formatPrice(product.price)}</TableCell>
@@ -305,6 +343,19 @@ export default function ProductsPage() {
         productId={selectedProductId}
         open={editModalOpen}
         onOpenChange={setEditModalOpen}
+      />
+      
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={closeDeleteDialog}
+        onConfirm={confirmDelete}
+        title="Are you sure you want to delete this product?"
+        description={`
+          Deleting  ' product ${itemToDelete?.name}' will remove it permanently. This action cannot be undone.
+          `}
+        
+        isLoading={isDeleting}
       />
     </div>
   )

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { productSchema } from "@/lib/schemas"
@@ -28,6 +28,7 @@ export function AddProductModal({ open, onOpenChange }) {
   const { categories, isLoading: categoriesLoading, error: categoriesError, refetch: refetchCategories } = useGetCategories()
   const { mutate: createCategory, isPending: isCreatingCategory } = usePostCategory()
   const [imagePreview, setImagePreview] = useState(null)
+  const imageFileRef = useRef(null)
 
   
   const {
@@ -36,6 +37,7 @@ export function AddProductModal({ open, onOpenChange }) {
     formState: { errors },
     reset,
     watch,
+    setValue,
   } = useForm({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -45,15 +47,18 @@ export function AddProductModal({ open, onOpenChange }) {
       price: "",
       category: "",
       pod_model: "",
+      image: null,
     },
   })
 
-  const watchedImage = watch("image")
+  // const watchedImage = watch("image")
 
   // Handle image preview
   React.useEffect(() => {
-    if (watchedImage && watchedImage.length > 0) {
-      const file = watchedImage[0]
+    // console.log("Watched image changed:", watchedImage)
+    if (imageFileRef.current) {
+      const file = imageFileRef.current
+      console.log("File for preview from ref:", file)
       if (file) {
         const reader = new FileReader()
         reader.onload = (e) => setImagePreview(e.target.result)
@@ -62,17 +67,29 @@ export function AddProductModal({ open, onOpenChange }) {
     } else {
       setImagePreview(null)
     }
-  }, [watchedImage])
+  }, [imageFileRef.current])
 
   const onSubmit = async (data) => {
-    try {
-      await createProduct(data)
-      reset()
-      setImagePreview(null)
-      onOpenChange(false)
-    } catch (error) {
-      console.error("Error creating product:", error)
+  
+    
+    // Create a new data object with the file from ref
+    const formData = {
+      ...data,
+      image: imageFileRef.current ? [imageFileRef.current] : null
     }
+    
+   
+    createProduct(formData, {
+      onSuccess: () => {
+        reset()
+        setImagePreview(null)
+        imageFileRef.current = null
+        onOpenChange(false)
+      },
+      onError: (error) => {
+        console.error("Error creating product:", error)
+      }
+    })
   }
 
  
@@ -162,8 +179,22 @@ export function AddProductModal({ open, onOpenChange }) {
                   id="image"
                   type="file"
                   accept="image/*"
-                  {...register("image")}
                   className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+                  onChange={(e) => {
+                    const files = e.target.files
+                    console.log("File input changed:", files)
+                    console.log("Files length:", files?.length)
+                    if (files && files.length > 0) {
+                      const file = files[0]
+                      console.log("Setting image file ref:", file)
+                      imageFileRef.current = file
+                      setValue("image", files, { shouldValidate: true })
+                    } else {
+                      console.log("No files selected")
+                      imageFileRef.current = null
+                      setValue("image", null, { shouldValidate: true })
+                    }
+                  }}
                 />
                 {imagePreview ? (
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
@@ -216,6 +247,7 @@ export function EditProductModal({ productId, open, onOpenChange }) {
   const { models, isLoading: modelsLoading, error: modelsError } = useGetPodModels()
   const { categories, isLoading: categoriesLoading, error: categoriesError } = useGetCategories()
   const [imagePreview, setImagePreview] = useState(null)
+  const imageFileRef = useRef(null)
   
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm({ resolver: zodResolver(productSchema) })
 
@@ -223,8 +255,10 @@ export function EditProductModal({ productId, open, onOpenChange }) {
 
   // Handle image preview
   React.useEffect(() => {
-    if (watchedImage && watchedImage.length > 0) {
-      const file = watchedImage[0]
+    console.log("Edit watched image changed:", watchedImage)
+    if (imageFileRef.current) {
+      const file = imageFileRef.current
+      console.log("Edit file for preview from ref:", file)
       if (file) {
         const reader = new FileReader()
         reader.onload = (e) => setImagePreview(e.target.result)
@@ -235,7 +269,7 @@ export function EditProductModal({ productId, open, onOpenChange }) {
     } else {
       setImagePreview(null)
     }
-  }, [watchedImage, product?.image])
+  }, [imageFileRef.current, product?.image])
 
   React.useEffect(() => {
     if (product) {
@@ -249,8 +283,18 @@ export function EditProductModal({ productId, open, onOpenChange }) {
   }, [product, setValue])
 
   const onSubmit = async (data) => {
+    console.log("Updating product with data:", data)
+    console.log("Image file ref:", imageFileRef.current)
+    
+    // Create a new data object with the file from ref
+    const formData = {
+      ...data,
+      image: imageFileRef.current ? [imageFileRef.current] : null
+    }
+    
+    console.log("Form data with image for update:", formData)
     try { 
-      updateProduct({ id: productId, data }, {
+      updateProduct({ id: productId, data: formData }, {
         onSuccess: () => {
           onOpenChange(false)
         }
@@ -331,8 +375,22 @@ export function EditProductModal({ productId, open, onOpenChange }) {
                 id="edit_image"
                 type="file"
                 accept="image/*"
-                {...register("image")}
                 className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+                onChange={(e) => {
+                  const files = e.target.files
+                  console.log("Edit file input changed:", files)
+                  console.log("Edit files length:", files?.length)
+                  if (files && files.length > 0) {
+                    const file = files[0]
+                    console.log("Setting edit image file ref:", file)
+                    imageFileRef.current = file
+                    setValue("image", files, { shouldValidate: true })
+                  } else {
+                    console.log("No files selected for edit")
+                    imageFileRef.current = null
+                    setValue("image", null, { shouldValidate: true })
+                  }
+                }}
               />
               {imagePreview ? (
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
