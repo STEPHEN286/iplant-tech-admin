@@ -1,21 +1,23 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { Bell, Search, User } from "lucide-react" // PanelLeft is now handled by SidebarTrigger
+import { Bell, Search, User } from "lucide-react" 
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { SidebarTrigger } from "@/components/ui/sidebar" // Only SidebarTrigger is needed here
-import { useAuth } from "@/hooks/useAuth"
+import { SidebarTrigger } from "@/components/ui/sidebar" 
+import { useLogout, useMe } from "@/hooks/use-auth"
+// import { useAuth } from "@/hooks/useAuth"
 
 export default function DashboardLayout({ children }) {
-  const { user, logout, isLogoutLoading } = useAuth()
+  // const { user, logout, isLogoutLoading } = useAuth()
+ const { data: user } = useMe();
+
+// console.log("ME:", user);
+
+  const {mutate: logout, isPending: isLogoutLoading} = useLogout()
 
   const handleLogout = async () => {
-    try {
-      await logout()
-    } catch (error) {
-      console.error("Logout error:", error)
-    }
+   logout()
   }
 
   return (
@@ -39,7 +41,7 @@ export default function DashboardLayout({ children }) {
                 <User className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-gray-800 text-gray-50 border-gray-700 w-48">
+            <DropdownMenuContent align="end" className="bg-white text-gray-700  w-48">
               <DropdownMenuItem className="text-sm">
                 {user?.email || "User"}
               </DropdownMenuItem>

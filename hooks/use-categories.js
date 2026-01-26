@@ -3,15 +3,11 @@ import api from "@/lib/api"
 import toast from "react-hot-toast"
 
 // Get all categories
-export const getCategories = async () => {
-  try {
+const getCategories = async () => {
+
     const response = await api.get("/categories/")
     console.log("Categories response:", response.data)
-    return response.data
-  } catch (error) {
-    console.error("Error fetching categories:", error)
-    throw error
-  }
+   return response.data
 }
 
 // Create new category
@@ -57,7 +53,7 @@ export const useGetCategories = () => {
   })
 
   return {
-    categories: data?.results || data || [],
+    categories: data?.results  || [],
     isLoading,
     error,
     refetch,

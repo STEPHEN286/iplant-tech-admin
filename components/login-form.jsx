@@ -9,7 +9,7 @@ import Image from "next/image";
 import {useForm}  from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/lib/schemas";
-import { useLogin } from "@/hooks/useAuth";
+import { useLogin } from "@/hooks/use-auth";
 
 export function LoginForm({
   className,
@@ -30,13 +30,17 @@ export function LoginForm({
     },
   });
 
-  const { login, isLoading, error } = useLogin();
+  const { mutate, isPending, isError, error } = useLogin();
+
+  console.log("MUTATION STATE:", { isPending, isError, error });
 
   const rememberMe = watch("rememberMe");
 
-  const onSubmit = async (data) => {
-      login(data.email, data.password);
-  };
+  const onSubmit = (data) => {
+    console.log("FORM SUBMITTED:", data);
+    mutate({email: data.email, password: data.password})
+  }
+  
 
   return (
     <form className={cn("flex flex-col gap-6", className)} onSubmit={handleSubmit(onSubmit)} {...props}>
@@ -93,9 +97,9 @@ export function LoginForm({
         <Button 
           type="submit" 
           className="w-full bg-green-600" 
-          disabled={isLoading}
+          disabled={isPending}
         >
-          {isLoading ? "Logging in..." : "Login"}
+          {isPending ? "Logging in..." : "Login"}
         </Button>
         {/* <Separator />
         <Button variant="outline" className="w-full bg-gray-800 text-white">

@@ -23,10 +23,12 @@ export default function CategoriesPage() {
     refetch 
   } = useGetCategories()
 
+  console.log("categories",categories)
+
   const { mutate: deleteCategory, isPending: isDeleting } = useDeleteCategory()
 
   // Filter categories based on search term
-  const filteredCategories = categories.filter(category =>
+  const filteredCategories = categories?.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 

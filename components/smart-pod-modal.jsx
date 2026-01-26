@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
-import { PlusCircle, Edit, Wrench } from "lucide-react"
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { PlusCircle, Edit, Wrench } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,19 +18,31 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/ui/dialog"
-import {usePostPod, useGetPodById, useUpdatePod, useGetPodModels, usePostPodModel} from "@/hooks/use-smart-pod"
-import { smartPodSchema } from "@/lib/schemas"
+} from "@/components/ui/dialog";
+import {
+  usePostPod,
+  useGetPodById,
+  useUpdatePod,
+  useGetPodModels,
+  usePostPodModel,
+} from "@/hooks/use-smart-pod";
+import { smartPodSchema } from "@/lib/schemas";
 
 export function AddPodModal() {
-  const [open, setOpen] = useState(false)
-  const [addingModel, setAddingModel] = useState(false)
-  const { mutate: createPod, isPending } = usePostPod()
-  const { models, isLoading: isModelsLoading, error: modelsError, refetch } = useGetPodModels()
-  const { mutate: createPodModel, isPending: isModelPending } = usePostPodModel()
+  const [open, setOpen] = useState(false);
+  const [addingModel, setAddingModel] = useState(false);
+  const { mutate: createPod, isPending } = usePostPod();
+  const {
+    models,
+    isLoading: isModelsLoading,
+    error: modelsError,
+    refetch,
+  } = useGetPodModels();
+  const { mutate: createPodModel, isPending: isModelPending } =
+    usePostPodModel();
 
-  const addingModelNameRef = React.useRef(null)
-  const addingModelDescRef = React.useRef(null)
+  const addingModelNameRef = React.useRef(null);
+  const addingModelDescRef = React.useRef(null);
 
   const {
     register,
@@ -43,18 +55,18 @@ export function AddPodModal() {
       pod_model: "",
       serial_number: "",
       warranty_expiry: "",
-      manufacturing_batch: ""
-    }
-  })
+      manufacturing_batch: "",
+    },
+  });
 
   const onSubmit = (data) => {
     createPod(data, {
       onSuccess: () => {
-        reset()
-        setOpen(false)
-      }
-    })
-  }
+        reset();
+        setOpen(false);
+      },
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -78,8 +90,8 @@ export function AddPodModal() {
                 Pod Model *
               </Label>
               <div className="col-span-3 flex gap-2">
-                <select 
-                  id="pod-model" 
+                <select
+                  id="pod-model"
                   {...register("pod_model")}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -89,12 +101,18 @@ export function AddPodModal() {
                     <>
                       <option value="">Select a model</option>
                       {models.map((m) => (
-                        <option key={m.id} value={m.id}>{m.name}</option>
+                        <option key={m.id} value={m.id}>
+                          {m.name}
+                        </option>
                       ))}
                     </>
                   )}
                 </select>
-                <Button type="button" variant="outline" onClick={() => setAddingModel((v) => !v)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setAddingModel((v) => !v)}
+                >
                   {addingModel ? "Close" : "+ Model"}
                 </Button>
               </div>
@@ -102,30 +120,60 @@ export function AddPodModal() {
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <div className="space-y-1">
                     <Label htmlFor="new-model-name">Model Name</Label>
-                    <Input id="new-model-name" placeholder="e.g. iPlant Basic v2" onChange={(e) => (addingModelNameRef.current = e.target.value)} />
+                    <Input
+                      id="new-model-name"
+                      placeholder="e.g. iPlant Basic v2"
+                      onChange={(e) =>
+                        (addingModelNameRef.current = e.target.value)
+                      }
+                    />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="new-model-desc">Description</Label>
-                    <Input id="new-model-desc" placeholder="Short description" onChange={(e) => (addingModelDescRef.current = e.target.value)} />
+                    <Input
+                      id="new-model-desc"
+                      placeholder="Short description"
+                      onChange={(e) =>
+                        (addingModelDescRef.current = e.target.value)
+                      }
+                    />
                   </div>
                   <div className="col-span-2 flex justify-end gap-2">
-                    <Button type="button" variant="outline" onClick={() => setAddingModel(false)}>Cancel</Button>
-                    <Button type="button" disabled={isModelPending} onClick={() => {
-                      const name = addingModelNameRef.current?.trim()
-                      const description = addingModelDescRef.current?.trim()
-                      if (!name) return
-                      createPodModel({ name, description }, {
-                        onSuccess: () => {
-                          setAddingModel(false)
-                          refetch()
-                        }
-                      })
-                    }}>Save</Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setAddingModel(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                    className="bg-green-600 hover:bg-green-700"
+                      type="button"
+                      disabled={isModelPending}
+                      onClick={() => {
+                        const name = addingModelNameRef.current?.trim();
+                        const description = addingModelDescRef.current?.trim();
+                        if (!name) return;
+                        createPodModel(
+                          { name, description },
+                          {
+                            onSuccess: () => {
+                              setAddingModel(false);
+                              refetch();
+                            },
+                          },
+                        );
+                      }}
+                    >
+                      Save
+                    </Button>
                   </div>
                 </div>
               )}
               {errors.pod_model && (
-                <p className="text-sm text-red-600 mt-1">{errors.pod_model.message}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.pod_model.message}
+                </p>
               )}
             </div>
             <div className="flex flex-col gap-2">
@@ -139,7 +187,9 @@ export function AddPodModal() {
                 aria-invalid={errors.serial_number ? "true" : "false"}
               />
               {errors.serial_number && (
-                <p className="text-sm text-red-600 mt-1">{errors.serial_number.message}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.serial_number.message}
+                </p>
               )}
             </div>
             <div className="flex flex-col gap-2">
@@ -154,7 +204,9 @@ export function AddPodModal() {
                 aria-invalid={errors.manufacturing_batch ? "true" : "false"}
               />
               {errors.manufacturing_batch && (
-                <p className="text-sm text-red-600 mt-1">{errors.manufacturing_batch.message}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.manufacturing_batch.message}
+                </p>
               )}
             </div>
             <div className="flex flex-col gap-2">
@@ -169,7 +221,9 @@ export function AddPodModal() {
                 aria-invalid={errors.warranty_expiry ? "true" : "false"}
               />
               {errors.warranty_expiry && (
-                <p className="text-sm text-red-600 mt-1">{errors.warranty_expiry.message}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.warranty_expiry.message}
+                </p>
               )}
             </div>
           </div>
@@ -179,8 +233,8 @@ export function AddPodModal() {
                 Cancel
               </Button>
             </DialogClose>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="bg-green-600 hover:bg-green-700 w-1/2 text-white"
               disabled={isPending}
             >
@@ -190,14 +244,14 @@ export function AddPodModal() {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 export function EditPodModal({ podId }) {
-  const [open, setOpen] = useState(false)
-  
-  const { pod, isLoading, error } = useGetPodById(podId)
-  const { mutate: updatePod, isPending } = useUpdatePod()
+  const [open, setOpen] = useState(false);
+
+  const { pod, isLoading, error } = useGetPodById(podId);
+  const { mutate: updatePod, isPending } = useUpdatePod();
 
   const {
     register,
@@ -211,30 +265,30 @@ export function EditPodModal({ podId }) {
       pod_model: "",
       serial_number: "",
       warranty_expiry: "",
-      manufacturing_batch: ""
-    }
-  })
+      manufacturing_batch: "",
+    },
+  });
 
   // Update form values when pod data is loaded
   React.useEffect(() => {
     if (pod) {
-      setValue("pod_model", pod.pod_model || "")
-      setValue("serial_number", pod.serial_number || "")
-      setValue("warranty_expiry", pod.warranty_expiry || "")
-      setValue("manufacturing_batch", pod.manufacturing_batch || "")
+      setValue("pod_model", pod.pod_model || "");
+      setValue("serial_number", pod.serial_number || "");
+      setValue("warranty_expiry", pod.warranty_expiry || "");
+      setValue("manufacturing_batch", pod.manufacturing_batch || "");
     }
-  }, [pod, setValue])
+  }, [pod, setValue]);
 
   const onSubmit = (data) => {
     updatePod(
       { id: podId, data },
       {
         onSuccess: () => {
-          setOpen(false)
-        }
-      }
-    )
-  }
+          setOpen(false);
+        },
+      },
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -246,11 +300,9 @@ export function EditPodModal({ podId }) {
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Edit Smart Pod</DialogTitle>
-          <DialogDescription>
-            Update smart pod information.
-          </DialogDescription>
+          <DialogDescription>Update smart pod information.</DialogDescription>
         </DialogHeader>
-        
+
         {isLoading ? (
           <div className="py-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
@@ -269,8 +321,8 @@ export function EditPodModal({ podId }) {
                   Pod Model *
                 </Label>
                 <div className="col-span-3">
-                  <select 
-                    id="edit-pod-model" 
+                  <select
+                    id="edit-pod-model"
                     {...register("pod_model")}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     aria-invalid={errors.pod_model ? "true" : "false"}
@@ -281,7 +333,9 @@ export function EditPodModal({ podId }) {
                     <option value="PlantPal Pro+">PlantPal Pro+</option>
                   </select>
                   {errors.pod_model && (
-                    <p className="text-sm text-red-600 mt-1">{errors.pod_model.message}</p>
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.pod_model.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -296,11 +350,16 @@ export function EditPodModal({ podId }) {
                   aria-invalid={errors.serial_number ? "true" : "false"}
                 />
                 {errors.serial_number && (
-                  <p className="text-sm text-red-600 mt-1">{errors.serial_number.message}</p>
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.serial_number.message}
+                  </p>
                 )}
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="edit-manufacturing-batch" className="text-right">
+                <Label
+                  htmlFor="edit-manufacturing-batch"
+                  className="text-right"
+                >
                   Manufacturing Batch *
                 </Label>
                 <Input
@@ -311,7 +370,9 @@ export function EditPodModal({ podId }) {
                   aria-invalid={errors.manufacturing_batch ? "true" : "false"}
                 />
                 {errors.manufacturing_batch && (
-                  <p className="text-sm text-red-600 mt-1">{errors.manufacturing_batch.message}</p>
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.manufacturing_batch.message}
+                  </p>
                 )}
               </div>
               <div className="flex flex-col gap-2">
@@ -326,7 +387,9 @@ export function EditPodModal({ podId }) {
                   aria-invalid={errors.warranty_expiry ? "true" : "false"}
                 />
                 {errors.warranty_expiry && (
-                  <p className="text-sm text-red-600 mt-1">{errors.warranty_expiry.message}</p>
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.warranty_expiry.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -336,8 +399,8 @@ export function EditPodModal({ podId }) {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="bg-green-600 hover:bg-green-700 w-1/2 text-white"
                 disabled={isPending}
               >
@@ -348,7 +411,7 @@ export function EditPodModal({ podId }) {
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 export function MaintenanceRequestModal({ podId }) {
@@ -383,8 +446,8 @@ export function MaintenanceRequestModal({ podId }) {
               Issue Type
             </Label>
             <div>
-              <select 
-                id="issue-type" 
+              <select
+                id="issue-type"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="">Select issue type</option>
@@ -401,8 +464,8 @@ export function MaintenanceRequestModal({ podId }) {
               Priority
             </Label>
             <div>
-              <select 
-                id="priority" 
+              <select
+                id="priority"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="Low">Low</option>
@@ -426,10 +489,7 @@ export function MaintenanceRequestModal({ podId }) {
             <Label htmlFor="schedule" className="text-right">
               Schedule
             </Label>
-            <Input
-              id="schedule"
-              type="date"
-            />
+            <Input id="schedule" type="date" />
           </div>
         </div>
         <DialogFooter className="flex justify-between p-2">
@@ -438,11 +498,14 @@ export function MaintenanceRequestModal({ podId }) {
               Cancel
             </Button>
           </DialogClose>
-          <Button type="submit" className="bg-green-600 hover:bg-green-700 w-1/2 text-white">
+          <Button
+            type="submit"
+            className="bg-green-600 hover:bg-green-700 w-1/2 text-white"
+          >
             Submit Request
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
