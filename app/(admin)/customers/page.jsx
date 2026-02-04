@@ -133,7 +133,7 @@ export default function CustomersPage() {
 
         <div className="overflow-x-auto border-t border-gray-200">
           <div className="min-w-[1200px]">
-           <DataTable columns={CustomerColumn({})} data={customersData.results || []} />
+           <DataTable columns={CustomerColumn({})} data={customersData?.results || []} />
           </div>
         </div>
       </div>
