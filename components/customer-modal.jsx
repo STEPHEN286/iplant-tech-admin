@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
-import { PlusCircle, Edit, Send, UserPlus } from "lucide-react"
+import { PlusCircle, Edit, Send, UserPlus, File, Paperclip, Calendar, Mail } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -293,12 +293,15 @@ export function AssignPodModal({ customer }) {
 }
 
 export function SendNewsletterModal() {
+
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [scheduleDate, setScheduleDate] = useState("")
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-gray-100 text-gray-900 border-gray-300 hover:bg-gray-200">
-          <Send className="h-4 w-4 mr-2" />
-          Send Campaign
+        <Button variant="outline" className="bg-green-600 hover:bg-green-700 text-white">
+          <Mail className="h-4 w-4 mr-2" />
+          Send Newsletter
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-3xl">
@@ -337,22 +340,44 @@ export function SendNewsletterModal() {
                 id="recipient-list" 
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="all">All Customers</option>
-                <option value="active">Active Customers</option>
-                <option value="inactive">Inactive Customers</option>
-                <option value="recent">Recent Customers (30 days)</option>
+                <option value="all">Select recipient list</option>
+               
               </select>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="schedule-date" className="text-right">
-              Schedule (Optional)
-            </Label>
-            <Input
-              id="schedule-date"
-              type="datetime-local"
-            />
-          </div>
+          <div className="relative">
+  <label 
+    htmlFor="schedule-date" 
+    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50"
+  >
+    <Paperclip className="h-4 w-4 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
+    <span className="text-sm text-gray-700">
+      {selectedFile ? selectedFile.name : 'Add an attachment'}
+    </span>
+  </label>
+  <Input
+    id="schedule-date"
+    type="file"
+    className="hidden"
+    onChange={(e) => setSelectedFile(e.target.files?.[0])}
+  />
+</div>
+         <div className="relative">
+  <Input
+    id="schedule-date"
+    type="datetime-local"
+    value={scheduleDate}
+    onChange={(e) => setScheduleDate(e.target.value)}
+    className="pr-10 [&::-webkit-calendar-picker-indicator]:hidden"
+    style={!scheduleDate ? { color: 'transparent' } : {}}
+  />
+  {!scheduleDate && (
+    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none text-sm">
+      Schedule Later
+    </span>
+  )}
+  <Calendar className="absolute h-4 w-4 right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
+</div>
         </div>
         <DialogFooter className="flex justify-between p-2">
           <DialogClose asChild>

@@ -1,18 +1,23 @@
 "use client"
 import SummaryCard from "../../../components/summary-card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ListFilter, UserPlus, UserCheck, Mail, CheckCircle, Send, FileDown, RefreshCw, Users, ShoppingCart, Package, TrendingUp } from "lucide-react"
-import { AddCustomerModal, EditCustomerModal, AssignPodModal, SendNewsletterModal } from "@/components/customer-modal"
+import {  Users,  Filter, Search } from "lucide-react"
+import {  SendNewsletterModal } from "@/components/customer-modal"
+import { DataTable } from "@/components/ui/data-table"
+import { CustomerColumn } from "@/lib/columns"
+import { useGetCustomers } from "@/hooks/useCustomer"
 
 export default function CustomersPage() {
+
+  const { data: customersData, isLoading } =  useGetCustomers()
   const summaryData = [
-    { title: "Total Customers", value: "1,234", icon: Users, iconColor: "text-blue-500", change: "+12%", changeColor: "text-blue-600" },
-    { title: "Active Customers", value: "987", icon: UserCheck, iconColor: "text-green-500", change: "+8%", changeColor: "text-green-600" },
-    { title: "Total Orders", value: "3,456", icon: ShoppingCart, iconColor: "text-purple-500", change: "+15%", changeColor: "text-purple-600" },
-    { title: "Revenue", value: "$45,678", icon: TrendingUp, iconColor: "text-orange-500", change: "+22%", changeColor: "text-orange-600" },
+    { title: "Total Customers", value: "0", icon: Users, iconColor: "text-blue-500", change: "+12%", changeColor: "text-blue-600" },
+    { title: "Active Customers", value: "0", icon: Users, iconColor: "text-green-500", change: "+8%", changeColor: "text-green-600" },
+    { title: "With Pods", value: "0", icon: Users, iconColor: "text-purple-500", change: "+15%", changeColor: "text-purple-600" },
+    { title: "Pending ", value: "0", icon: Users, iconColor: "text-orange-500", change: "+22%", changeColor: "text-orange-600" },
   ]
 
   const customers = [
@@ -72,7 +77,7 @@ export default function CustomersPage() {
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
           <SendNewsletterModal />
-          <AddCustomerModal />
+          {/* <AddCustomerModal /> */}
         </div>
       </div>
 
@@ -90,27 +95,30 @@ export default function CustomersPage() {
             <h2 className="text-lg font-semibold text-gray-900">
               Customer List ({customers.length})
             </h2>
-            <Button variant="outline" size="sm">
+            {/* <Button variant="outline" size="sm">
               <FileDown className="h-4 w-4 mr-2" />
               Export CSV
-            </Button>
+            </Button> */}
           </div>
           
           {/* Search and Filters */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-4">
-            <Input
-              type="search"
-              placeholder="Search by name or email..."
-              className="max-w-sm flex-1 text-gray-900 placeholder:text-gray-500 border-gray-300"
-            />
+          <div className="flex flex-col sm:flex-row    sm:items-center gap-3 mt-4">
+           <div className="relative w-full flex-1 sm:w-auto ">
+            <Search className="absolute h-4 left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+              <Input
+                type="search"
+                placeholder="Search  customers..."
+                className="  pl-10 text-gray-900 placeholder:text-gray-500 border-gray-300"
+              />
+           </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   className="flex items-center gap-2 text-gray-900 border-gray-300 hover:bg-gray-200"
                 >
-                  <ListFilter className="h-4 w-4" />
-                  All Status
+                  <Filter className="h-4 w-4" />
+                  Filters
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white text-gray-900 border-gray-200">
@@ -125,62 +133,7 @@ export default function CustomersPage() {
 
         <div className="overflow-x-auto border-t border-gray-200">
           <div className="min-w-[1200px]">
-            <Table className="w-full">
-              <TableHeader>
-                <TableRow className="border-gray-200 bg-gray-50">
-                  <TableHead className="text-gray-500 font-semibold px-4 py-3">Customer</TableHead>
-                  <TableHead className="text-gray-500 font-semibold px-4 py-3">Contact</TableHead>
-                  <TableHead className="text-gray-500 font-semibold px-4 py-3">Status</TableHead>
-                  <TableHead className="text-gray-500 font-semibold px-4 py-3">Orders</TableHead>
-                  <TableHead className="text-gray-500 font-semibold px-4 py-3">Total Spent</TableHead>
-                  <TableHead className="text-gray-500 font-semibold px-4 py-3">Last Order</TableHead>
-                  <TableHead className="text-gray-500 font-semibold px-4 py-3">Source</TableHead>
-                  <TableHead className="text-gray-500 font-semibold px-4 py-3">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {customers.map((customer) => (
-                  <TableRow key={customer.id} className="border-gray-200 hover:bg-gray-50">
-                    <TableCell className="px-4 py-3">
-                      <div>
-                        <div className="font-medium text-gray-900">{customer.name}</div>
-                        <div className="text-sm text-gray-500">ID: {customer.id}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <div>
-                        <div className="text-gray-700">{customer.email}</div>
-                        <div className="text-sm text-gray-500">{customer.phone}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        customer.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
-                      }`}>
-                        {customer.status}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-gray-700 px-4 py-3">{customer.orders}</TableCell>
-                    <TableCell className="text-gray-700 px-4 py-3 font-medium">{customer.totalSpent}</TableCell>
-                    <TableCell className="text-gray-700 px-4 py-3">{customer.lastOrder}</TableCell>
-                    <TableCell className="text-gray-700 px-4 py-3">{customer.source}</TableCell>
-                    <TableCell className="px-4 py-3">
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-gray-700 border-gray-300 hover:bg-gray-200"
-                        >
-                          View
-                        </Button>
-                        <EditCustomerModal customer={customer} />
-                        <AssignPodModal customer={customer} />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+           <DataTable columns={CustomerColumn({})} data={customersData.results || []} />
           </div>
         </div>
       </div>
