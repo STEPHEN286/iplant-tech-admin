@@ -13,3 +13,16 @@ export const  useGetCustomers = () =>  {
         queryKey: ['customers']
     })
 }
+
+const getCustomersSummary = async () => {
+    const response = await api.get("/dashboard/stats/")
+    return response.data
+}
+
+
+export const useGetCustomersSummary = () => {
+    return useQuery({
+        queryFn: getCustomersSummary,
+        queryKey: ['customers-summary']
+    })
+}

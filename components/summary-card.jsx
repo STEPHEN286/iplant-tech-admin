@@ -17,7 +17,7 @@ export default function SummaryCard({ title, value, change, icon: Icon, iconColo
         <div className={`text-2xl font-bold ${valueColor}`}>{value}</div>
         <p className={`text-xs text-gray-500 flex items-center`}>
           {/* <ChangeIcon className="h-3 w-3 mr-1" /> */}
-          {change}
+          {/* {change} */}
         </p>
       </CardContent>
     </Card>

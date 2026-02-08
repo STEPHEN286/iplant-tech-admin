@@ -8,16 +8,21 @@ import {  Users,  Filter, Search } from "lucide-react"
 import {  SendNewsletterModal } from "@/components/customer-modal"
 import { DataTable } from "@/components/ui/data-table"
 import { CustomerColumn } from "@/lib/columns"
-import { useGetCustomers } from "@/hooks/useCustomer"
+import { useGetCustomers, useGetCustomersSummary } from "@/hooks/useCustomer"
 
 export default function CustomersPage() {
 
   const { data: customersData, isLoading } =  useGetCustomers()
+  const { data: summary, isLoading: isSummaryLoading } = useGetCustomersSummary()
+
+  if (isLoading || isSummaryLoading) return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div>
+    </div>;
   const summaryData = [
-    { title: "Total Customers", value: "0", icon: Users, iconColor: "text-blue-500", change: "+12%", changeColor: "text-blue-600" },
-    { title: "Active Customers", value: "0", icon: Users, iconColor: "text-green-500", change: "+8%", changeColor: "text-green-600" },
-    { title: "With Pods", value: "0", icon: Users, iconColor: "text-purple-500", change: "+15%", changeColor: "text-purple-600" },
-    { title: "Pending ", value: "0", icon: Users, iconColor: "text-orange-500", change: "+22%", changeColor: "text-orange-600" },
+    { title: "Total Customers", value: summary?.total_customers || "0", icon: Users, iconColor: "text-blue-500", change: "+12%", changeColor: "text-blue-600" },
+    { title: "Active Customers", value: summary?.active_users || "0", icon: Users, iconColor: "text-green-500", change: "+8%", changeColor: "text-green-600" },
+    { title: "With Pods", value: summary?.with_pods || "0", icon: Users, iconColor: "text-purple-500", change: "+15%", changeColor: "text-purple-600" },
+    { title: "Pending ", value: summary?.pending || "0", icon: Users, iconColor: "text-orange-500", change: "+22%", changeColor: "text-orange-600" },
   ]
 
   const customers = [
